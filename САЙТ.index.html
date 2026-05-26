@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Stranger Among His Own — квест-детектив в колледже</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #070a11;
+      font-family: 'Inter', sans-serif;
+      color: #eef2ff;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    .bg-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(60, 80, 120, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(60, 80, 120, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 2rem 3rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* КОНТАКТНАЯ СТРОКА — только email */
+    .contact-bar {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid rgba(79, 127, 179, 0.3);
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .contact-email {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #9bb0cf;
+      transition: all 0.2s;
+      background: rgba(15, 20, 30, 0.4);
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      backdrop-filter: blur(2px);
+    }
+
+    .contact-email:hover {
+      color: #ffffff;
+      background: rgba(79, 127, 179, 0.2);
+    }
+
+    /* ХЕДЕР */
+    .hero {
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+      padding: 1rem 0;
+      cursor: pointer;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      height: 200%;
+      background: radial-gradient(ellipse at center, rgba(79, 127, 179, 0.25) 0%, rgba(79, 127, 179, 0.05) 40%, transparent 70%);
+      filter: blur(40px);
+      pointer-events: none;
+      z-index: -1;
+      border-radius: 50%;
+    }
+
+    .hero h1 {
+      font-size: 3.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 0%, #8ba5cf 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 30px rgba(79, 127, 179, 0.3);
+    }
+
+    .hero-tag {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      color: #8f9fc7;
+      border-bottom: 1px solid #2a3448;
+      display: inline-block;
+      padding-bottom: 0.5rem;
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .desc-card {
+      background: rgba(15, 20, 30, 0.6);
+      backdrop-filter: blur(4px);
+      border-radius: 24px;
+      padding: 1.8rem;
+      border: 1px solid #2a3448;
+    }
+
+    .desc-card p {
+      margin-bottom: 1rem;
+      color: #cfddf5;
+      font-size: 0.95rem;
+    }
+
+    .badge-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin: 1.2rem 0 0.5rem;
+    }
+
+    .badge {
+      background: #1a2332;
+      padding: 0.25rem 1rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #b7c7e8;
+      border: 1px solid #2e3a50;
+    }
+
+    .sys-card {
+      background: rgba(10, 13, 20, 0.7);
+      border-radius: 24px;
+      padding: 1.8rem;
+      border: 1px solid #2a3448;
+    }
+
+    .sys-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #b7c7e8;
+      letter-spacing: 1px;
+    }
+
+    .spec-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    .spec-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed #2a3448;
+      padding-bottom: 0.3rem;
+    }
+
+    /* КАРУСЕЛЬ — десктоп: 3 картинки, планшет: 2, телефон: 1 */
+    .gallery-section {
+      margin: 1rem 0 2rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      white-space: nowrap;
+      margin-left: 0;
+    }
+
+    .section-title span {
+      width: 50px;
+      height: 3px;
+      background: #4f7fb3;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .carousel-container {
+      position: relative;
+      background: #0a0e18;
+      border-radius: 28px;
+      padding: 1rem 2rem;
+      border: 1px solid #2a3448;
+    }
+
+    .carousel-viewport {
+      overflow: hidden;
+      border-radius: 20px;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.4s ease-in-out;
+      gap: 1rem;
+    }
+
+    .carousel-slide {
+      flex: 0 0 calc(33.333% - 0.67rem);
+      min-width: 0;
+    }
+
+    .carousel-img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: transform 0.2s, border 0.2s;
+      border: 1px solid #2a3448;
+    }
+
+    .carousel-img:hover {
+      transform: scale(1.02);
+      border-color: #4f7fb3;
+    }
+
+    .carousel-caption {
+      text-align: center;
+      padding: 0.6rem 0.2rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #b7c7e8;
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(135deg, #1e2a3a, #0f1722);
+      border: none;
+      color: white;
+      font-size: 1.4rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(79, 127, 179, 0.4);
+    }
+
+    .carousel-btn:hover {
+      background: linear-gradient(135deg, #2c3e5c, #1a2538);
+      border-color: #4f7fb3;
+      transform: translateY(-50%) scale(1.08);
+    }
+
+    .carousel-btn.prev { left: -12px; }
+    .carousel-btn.next { right: -12px; }
+
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 1.5rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #2a3448;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .dot.active {
+      background: #4f7fb3;
+      width: 24px;
+      border-radius: 10px;
+    }
+
+    /* КНОПКИ ПОКУПКИ */
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, #2c3e5c, #1e2a3a);
+      border: none;
+      padding: 1rem;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-family: inherit;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(79, 127, 179, 0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #4f7fb3;
+      box-shadow: none;
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, #3f5e8c, #2c3e5c);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(79, 127, 179, 0.3);
+    }
+
+    .purchase-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin: 2rem 0 2.5rem;
+    }
+
+    .plan {
+      flex: 1;
+      background: #0f1420;
+      border-radius: 28px;
+      padding: 2rem;
+      border: 1px solid #2a3448;
+    }
+
+    .plan.premium {
+      background: linear-gradient(135deg, #121a2a, #0c1020);
+      border: 1px solid #4f7fb3;
+      box-shadow: 0 10px 25px -8px rgba(79, 127, 179, 0.2);
+    }
+
+    .plan h3 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .price { font-size: 2.2rem; font-weight: 800; margin: 0.8rem 0; color: #ffffff; }
+    .price small { font-size: 0.8rem; font-weight: 400; color: #8f9fc7; }
+
+    .features {
+      list-style: none;
+      margin: 1.5rem 0;
+    }
+
+    .features li {
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+    }
+
+    .features li::before {
+      content: "✓";
+      color: #4f7fb3;
+      font-weight: bold;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-top: 1px solid #2a3448;
+      padding-top: 2rem;
+      margin-top: 1rem;
+    }
+
+    .footer-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-btn {
+      background: linear-gradient(135deg, #1e2a3a, #0f1722);
+      border: 1px solid rgba(79, 127, 179, 0.4);
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #eef2ff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: inherit;
+    }
+
+    .footer-btn:hover {
+      background: linear-gradient(135deg, #2c3e5c, #1a2538);
+      border-color: #4f7fb3;
+      transform: translateY(-2px);
+    }
+
+    .steam-badge {
+      background: #1a2332;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      font-size: 0.7rem;
+      color: #5f6f8a;
+    }
+
+    /* МОДАЛЬНЫЕ ОКНА */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 500px;
+      width: 90%;
+      background: linear-gradient(135deg, #0f1420, #0a0e18);
+      border-radius: 28px;
+      padding: 2rem;
+      border: 1px solid #4f7fb3;
+      box-shadow: 0 0 40px rgba(79, 127, 179, 0.3);
+      cursor: default;
+    }
+
+    .modal-content h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+
+    .modal-content p {
+      margin-bottom: 1rem;
+      color: #cfddf5;
+      line-height: 1.6;
+    }
+
+    .price-highlight {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #4f7fb3;
+      margin: 1rem 0;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 28px;
+      cursor: pointer;
+      color: #8f9fc7;
+      transition: 0.2s;
+    }
+
+    .modal-close-btn:hover {
+      color: #ffffff;
+    }
+
+    .modal-confirm {
+      width: 100%;
+      margin-top: 1.5rem;
+      background: linear-gradient(135deg, #4f7fb3, #2c3e5c);
+    }
+
+    .modal-cancel {
+      width: 100%;
+      margin-top: 0.8rem;
+      background: transparent;
+      border: 1px solid #4f7fb3;
+    }
+
+    /* СЕКРЕТНОЕ ОКНО */
+    .secret-modal {
+      display: none;
+      position: fixed;
+      z-index: 1200;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.98);
+      backdrop-filter: blur(12px);
+      cursor: pointer;
+    }
+
+    .secret-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 600px;
+      width: 90%;
+      background: linear-gradient(135deg, #1a0f0f, #0d0a1a);
+      border-radius: 28px;
+      padding: 2rem;
+      border: 2px solid #ff3366;
+      box-shadow: 0 0 60px rgba(255, 51, 102, 0.5);
+      text-align: center;
+      cursor: default;
+      animation: secretGlow 2s infinite;
+    }
+
+    @keyframes secretGlow {
+      0% { box-shadow: 0 0 20px rgba(255, 51, 102, 0.3); border-color: #ff3366; }
+      50% { box-shadow: 0 0 50px rgba(255, 51, 102, 0.8); border-color: #ff6699; }
+      100% { box-shadow: 0 0 20px rgba(255, 51, 102, 0.3); border-color: #ff3366; }
+    }
+
+    .secret-content h2 {
+      font-size: 2rem;
+      color: #ff6699;
+      margin-bottom: 1rem;
+    }
+
+    .secret-highlight {
+      font-size: 1.2rem;
+      color: #ffcc00;
+      margin: 1rem 0;
+      font-family: monospace;
+    }
+
+    .img-modal {
+      display: none;
+      position: fixed;
+      z-index: 1100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+    }
+
+    .img-modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 16px;
+    }
+
+    /* ========== АДАПТИВ ДЛЯ ТЕЛЕФОНОВ ========== */
+    @media (max-width: 800px) {
+      .container { padding: 1.5rem 1.2rem 2rem; }
+      .hero h1 { font-size: 2.2rem; }
+      .hero-tag { font-size: 0.7rem; letter-spacing: 3px; }
+      .game-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+      .desc-card, .sys-card { padding: 1.2rem; }
+      .desc-card p { font-size: 0.85rem; }
+      .badge { font-size: 0.6rem; padding: 0.2rem 0.7rem; }
+      .section-title { font-size: 1.2rem; margin-bottom: 1.2rem; }
+      .section-title span { width: 35px; }
+      .carousel-container { padding: 0.8rem 1rem; }
+      .carousel-btn { width: 36px; height: 36px; font-size: 1.1rem; }
+      .carousel-btn.prev { left: -8px; }
+      .carousel-btn.next { right: -8px; }
+      .carousel-caption { font-size: 0.65rem; }
+      .purchase-row { flex-direction: column; gap: 1.2rem; }
+      .plan { padding: 1.2rem; }
+      .plan h3 { font-size: 1.4rem; }
+      .price { font-size: 1.8rem; }
+      .features li { font-size: 0.75rem; }
+      .btn { padding: 0.8rem; font-size: 0.9rem; }
+      .footer-links { flex-direction: column; text-align: center; }
+      .footer-buttons { justify-content: center; }
+      .footer-btn { padding: 0.5rem 1rem; font-size: 0.75rem; }
+      .steam-badge { font-size: 0.65rem; }
+      footer { font-size: 0.6rem; margin-top: 2rem; }
+      .modal-content { padding: 1.2rem; }
+      .modal-content h2 { font-size: 1.3rem; }
+      .price-highlight { font-size: 1.5rem; }
+      .secret-content { padding: 1.2rem; }
+      .secret-content h2 { font-size: 1.3rem; }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 1.8rem; }
+      .contact-email { font-size: 0.65rem; padding: 0.3rem 0.7rem; }
+      .spec-list { font-size: 0.65rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="container">
+  <!-- КОНТАКТНАЯ СТРОКА — только email -->
+  <div class="contact-bar">
+    <div class="contact-email">
+      <span>✉️</span>
+      <span>team.drive.game@gmail.com</span>
+    </div>
+  </div>
+
+  <div class="hero" id="secretClickZone">
+    <h1>STRANGER<br>AMONG HIS OWN</h1>
+    <div class="hero-tag">квест-детектив · расследование в колледже</div>
+  </div>
+
+  <div class="game-grid">
+    <div class="desc-card">
+      <p><strong>Твой друг исчез в колледже. Полиция бездействует.</strong> Ты начинаешь собственное расследование, шаг за шагом собирая улики и допрашивая всех, кто мог что-то видеть.</p>
+      <p>Преподаватели, одногруппники, охранник — каждый что-то скрывает. Выбирай реплики в диалогах, решай головоломки и находи улики. <strong>Твой выбор определит финал.</strong></p>
+      <div class="badge-group">
+        <span class="badge">🔍 детектив</span>
+        <span class="badge">🗣️ выбор реплик</span>
+        <span class="badge">🧩 головоломки</span>
+        <span class="badge">🎓 студенческая жизнь</span>
+      </div>
+    </div>
+    <div class="sys-card">
+      <h3>⚙️ минимальные системные требования</h3>
+      <div class="spec-list">
+        <div class="spec-item"><span>ОС:</span><span>Windows 10</span></div>
+        <div class="spec-item"><span>Процессор:</span><span>2.0 GHz</span></div>
+        <div class="spec-item"><span>ОЗУ:</span><span>4 GB</span></div>
+        <div class="spec-item"><span>Видеокарта:</span><span>Intel HD Graphics</span></div>
+        <div class="spec-item"><span>Место:</span><span>2 GB</span></div>
+        <div class="spec-item"><span>Движок:</span><span>Intel® Y Pro</span></div>
+        <div class="spec-item"><span>Платформа:</span><span>Windows (Steam)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- КАРУСЕЛЬ -->
+  <div class="gallery-section">
+    <div class="section-title">
+      <span></span>
+      <span class="title-text">кадры из игры</span>
+      <span></span>
+    </div>
+    <div class="carousel-container">
+      <button class="carousel-btn prev" id="carouselPrev">◀</button>
+      <button class="carousel-btn next" id="carouselNext">▶</button>
+      <div class="carousel-viewport">
+        <div class="carousel-track" id="carouselTrack"></div>
+      </div>
+      <div class="carousel-dots" id="carouselDots"></div>
+    </div>
+  </div>
+
+  <!-- КАРТОЧКИ ПОКУПКИ -->
+  <div class="purchase-row">
+    <div class="plan premium">
+      <h3>Premium</h3>
+      <div class="price">999₽ <small>разовая оплата</small></div>
+      <ul class="features">
+        <li>Без внутриигровых покупок</li>
+        <li>Без рекламы</li>
+        <li>Эксклюзивная концовка «Тайна деканата»</li>
+        <li>Альтернативные диалоги с охранником</li>
+        <li>Саундтрек и артбук</li>
+      </ul>
+      <button class="btn" id="premiumBtn">Купить Premium</button>
+    </div>
+    <div class="plan">
+      <h3>Стандартная версия</h3>
+      <div class="price">579 ₽ <small>полная игра</small></div>
+      <ul class="features">
+        <li>Полная игра без доплат</li>
+        <li>Все основные улики и концовки</li>
+        <li>Все реплики и диалоги</li>
+        <li>Поддержка облачных сохранений</li>
+      </ul>
+      <button class="btn btn-outline" id="standardBtn">Выбрать Стандарт</button>
+    </div>
+  </div>
+
+  <div class="footer-links">
+    <div class="footer-buttons">
+      <button class="footer-btn" id="detailsBtn">📖 Узнать подробнее</button>
+      <button class="footer-btn" id="feedbackBtn">✉️ Обратная связь</button>
+    </div>
+    <div class="steam-badge">🎮 Пока готовится к выходу в Steam</div>
+  </div>
+
+  <footer></footer>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО ДЛЯ PREMIUM (В РАЗРАБОТКЕ) -->
+<div id="premiumModal" class="modal" onclick="closePremiumModal()">
+  <div class="modal-content">
+    <span class="modal-close-btn" onclick="closePremiumModal()">&times;</span>
+    <h2>🚧 PREMIUM В РАЗРАБОТКЕ</h2>
+    <div style="text-align: center; font-size: 3rem; margin: 1rem 0;">🔨</div>
+    <p><strong>Premium-издание ещё готовится к выходу!</strong></p>
+    <p>Мы работаем над эксклюзивным контентом, чтобы сделать игру ещё лучше. В Premium версии вас ждут:</p>
+    <ul style="margin: 1rem 0 1rem 1.5rem; color: #cfddf5;">
+      <li>🎮 Полная игра без ограничений</li>
+      <li>🚫 Без рекламы</li>
+      <li>🔓 Эксклюзивная концовка «Тайна деканата»</li>
+      <li>🎙️ Альтернативные диалоги</li>
+      <li>🎵 Саундтрек и артбук</li>
+    </ul>
+    <p>Подпишитесь на новости, чтобы узнать о релизе первыми!</p>
+    <div class="price-highlight" style="font-size: 1.2rem;">💎 Скоро в Steam</div>
+    <button class="btn modal-confirm" onclick="closePremiumModal()" style="background: linear-gradient(135deg, #ff3366, #991133);">Закрыть</button>
+  </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО ДЛЯ СТАНДАРТ (В РАЗРАБОТКЕ) -->
+<div id="standardModal" class="modal" onclick="closeStandardModal()">
+  <div class="modal-content">
+    <span class="modal-close-btn" onclick="closeStandardModal()">&times;</span>
+    <h2>🚧 СТАНДАРТ В РАЗРАБОТКЕ</h2>
+    <div style="text-align: center; font-size: 3rem; margin: 1rem 0;">⚙️</div>
+    <p><strong>Стандартная версия сейчас в разработке!</strong></p>
+    <p>Мы усердно работаем над игрой, чтобы она стала максимально увлекательной. В стандартной версии вас ждут:</p>
+    <ul style="margin: 1rem 0 1rem 1.5rem; color: #cfddf5;">
+      <li>🎮 Полная игра</li>
+      <li>📋 Все основные улики и концовки</li>
+      <li>💬 Все реплики и диалоги</li>
+      <li>☁️ Облачные сохранения</li>
+    </ul>
+    <p>Следите за обновлениями — релиз совсем скоро!</p>
+    <div class="price-highlight" style="font-size: 1.2rem;">🎮 Скоро в Steam</div>
+    <button class="btn modal-confirm" onclick="closeStandardModal()" style="background: linear-gradient(135deg, #ff3366, #991133);">Закрыть</button>
+  </div>
+</div>
+
+<div id="detailsModal" class="modal" onclick="closeDetailsModal()">
+  <div class="modal-content">
+    <span class="modal-close-btn" onclick="closeDetailsModal()">&times;</span>
+    <h2>📖 О СЮЖЕТЕ</h2>
+    <p><strong>Вы — студент второго курса колледжа Редвуд.</strong> Ваш лучший друг Никита исчезает после вечеринки в общежитии. Полиция отказывается расследовать.</p>
+    <p>Вы находите странную записку на его столе: <strong>«Не доверяй никому. Проверь архив»</strong>. 6 подозреваемых, 10 локаций, 3 финала.</p>
+    <button class="btn modal-confirm" onclick="closeDetailsModal()">Понятно!</button>
+  </div>
+</div>
+
+<div id="feedbackModal" class="modal" onclick="closeFeedbackModal()">
+  <div class="modal-content">
+    <span class="modal-close-btn" onclick="closeFeedbackModal()">&times;</span>
+    <h2>✉️ ОБРАТНАЯ СВЯЗЬ</h2>
+    <p>📧 team.drive.game@gmail.com</p>
+    <button class="btn modal-confirm" onclick="closeFeedbackModal()">Закрыть</button>
+  </div>
+</div>
+
+<div id="secretModal" class="secret-modal" onclick="closeSecretModal()">
+  <div class="secret-content">
+    <span class="modal-close-btn" onclick="closeSecretModal()" style="color:#ff6699">&times;</span>
+    <h2>🕯️ СЕКРЕТ РАСКРЫТ 🕯️</h2>
+    <p>Ты нашёл тайную комнату в архиве колледжа! Здесь хранятся записи пропавших студентов.</p>
+    <p>Исчезновения происходят раз в 5 лет — <strong>23 октября</strong>.</p>
+    <div class="secret-highlight">🔮ПОСХАЛКО🔮</div>
+    <button class="btn modal-confirm" onclick="closeSecretModal()" style="background:linear-gradient(135deg,#ff3366,#991133)">Закрыть</button>
+  </div>
+</div>
+
+<div id="imageModal" class="img-modal" onclick="closeImageModal()">
+  <span class="modal-close-btn" style="right:35px;top:20px;font-size:40px">&times;</span>
+  <img class="img-modal-content" id="modalImage">
+</div>
+
+<script>
+  // ========== КАРУСЕЛЬ (адаптивная: 3/2/1 картинки) ==========
+  const galleryItems = [
+    { imgUrl: "https://www.rupixel.ru/files/preview/1280x960/216669515251ssksioqhkdgqrejcrlqylq2zokzib0iqxj3topv1g53ijlc9cofsztidamop3s70sbmlfsngfxpnvpvmzhxt5hmjuyoym1sufpf.jpg", caption: "📚 Тёмный коридор колледжа" },
+    { imgUrl: "https://sun9-36.userapi.com/s/v1/ig2/BnvNRQ5J5E-Sm7AB_7RCuqn8hPeTabmrKEIShv9nsGHYoyHr3OD-uWDZw31BB3RUgJMB6h6SwmNt-IX2lLVK-w2k.jpg?quality=95&as=32x24,48x36,72x54,108x81,160x120,240x180,360x270,480x360,540x405,640x480,720x540,1080x810,1280x960,1440x1080,2560x1920&from=bu&cs=2560x0", caption: "🗣️ Допрос куратора" },
+    { imgUrl: "https://images2.novochag.ru/upload/img_cache/e8e/e8e12c4e5d5da57a3dd756537bf79e32_ce_1195x826x0x0.jpg", caption: "🧩 Заброшенный подвал" },
+    { imgUrl: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&h=450&fit=crop", caption: "📖 Старая библиотека" },
+    { imgUrl: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&h=450&fit=crop", caption: "🌑 Ночной корпус" },
+    { imgUrl: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=450&fit=crop", caption: "🔦 Аварийный выход" }
+  ];
+
+  const track = document.getElementById('carouselTrack');
+  const dotsContainer = document.getElementById('carouselDots');
+  const prevBtn = document.getElementById('carouselPrev');
+  const nextBtn = document.getElementById('carouselNext');
+  let currentIndex = 0;
+  let slidesCount = galleryItems.length;
+  let slidesPerView = 3;
+
+  function getSlidesPerView() {
+    if (window.innerWidth <= 600) return 1;
+    if (window.innerWidth <= 900) return 2;
+    return 3;
+  }
+
+  function renderCarousel() {
+    track.innerHTML = '';
+    dotsContainer.innerHTML = '';
+    slidesPerView = getSlidesPerView();
+    const maxIndex = Math.max(0, slidesCount - slidesPerView);
+    if (currentIndex > maxIndex) currentIndex = maxIndex;
+    
+    galleryItems.forEach((item) => {
+      const slide = document.createElement('div');
+      slide.className = 'carousel-slide';
+      slide.innerHTML = `<img class="carousel-img" src="${item.imgUrl}" alt="${item.caption}" loading="lazy"><div class="carousel-caption">${item.caption}</div>`;
+      slide.querySelector('.carousel-img').addEventListener('click', (e) => { e.stopPropagation(); openImageModal(item.imgUrl); });
+      track.appendChild(slide);
+    });
+    
+    for (let i = 0; i <= maxIndex; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      if (i === currentIndex) dot.classList.add('active');
+      dot.addEventListener('click', () => { currentIndex = i; updateCarousel(); });
+      dotsContainer.appendChild(dot);
+    }
+    updateCarousel();
+  }
+
+  function updateCarousel() {
+    const slideWidthPercent = 100 / slidesPerView;
+    track.style.transform = `translateX(-${currentIndex * slideWidthPercent}%)`;
+    document.querySelectorAll('.dot').forEach((dot, idx) => { 
+      if (idx === currentIndex) dot.classList.add('active'); 
+      else dot.classList.remove('active'); 
+    });
+  }
+
+  function nextSlide() { 
+    const maxIndex = Math.max(0, slidesCount - slidesPerView); 
+    if (currentIndex < maxIndex) { currentIndex++; updateCarousel(); } 
+  }
+  function prevSlide() { 
+    if (currentIndex > 0) { currentIndex--; updateCarousel(); } 
+  }
+
+  prevBtn.addEventListener('click', prevSlide);
+  nextBtn.addEventListener('click', nextSlide);
+  window.addEventListener('resize', () => { renderCarousel(); });
+  renderCarousel();
+
+  // ========== МОДАЛЬНЫЕ ОКНА ==========
+  const premiumModal = document.getElementById('premiumModal');
+  const standardModal = document.getElementById('standardModal');
+  const premiumBtnEl = document.getElementById('premiumBtn');
+  const standardBtnEl = document.getElementById('standardBtn');
+  const detailsBtn = document.getElementById('detailsBtn');
+  const feedbackBtn = document.getElementById('feedbackBtn');
+  const detailsModal = document.getElementById('detailsModal');
+  const feedbackModal = document.getElementById('feedbackModal');
+  const secretModal = document.getElementById('secretModal');
+  const secretZone = document.getElementById('secretClickZone');
+
+  let clickCount = 0, secretTimeout;
+  secretZone.addEventListener('click', () => { 
+    clickCount++; 
+    clearTimeout(secretTimeout); 
+    secretTimeout = setTimeout(() => clickCount=0, 1000); 
+    if(clickCount>=3){ secretModal.style.display='block'; clickCount=0; } 
+  });
+  function closeSecretModal() { secretModal.style.display='none'; }
+  function openPremiumModal() { premiumModal.style.display='block'; }
+  function closePremiumModal() { premiumModal.style.display='none'; }
+  function openStandardModal() { standardModal.style.display='block'; }
+  function closeStandardModal() { standardModal.style.display='none'; }
+  function openDetailsModal() { detailsModal.style.display='block'; }
+  function closeDetailsModal() { detailsModal.style.display='none'; }
+  function openFeedbackModal() { feedbackModal.style.display='block'; }
+  function closeFeedbackModal() { feedbackModal.style.display='none'; }
+  function openImageModal(imgUrl) { document.getElementById('imageModal').style.display='block'; document.getElementById('modalImage').src=imgUrl; }
+  function closeImageModal() { document.getElementById('imageModal').style.display='none'; }
+
+  premiumBtnEl.addEventListener('click', openPremiumModal);
+  standardBtnEl.addEventListener('click', openStandardModal);
+  detailsBtn.addEventListener('click', openDetailsModal);
+  feedbackBtn.addEventListener('click', openFeedbackModal);
+  document.addEventListener('keydown', (e) => { if(e.key==='Escape'){ closeImageModal(); closePremiumModal(); closeStandardModal(); closeDetailsModal(); closeFeedbackModal(); closeSecretModal(); } });
+  console.log("%c🕯️ СЕКРЕТ: кликни 3 раза по названию игры... 🕯️", "color:#ff6699;font-size:16px;font-weight:bold");
+</script>
+</body>
